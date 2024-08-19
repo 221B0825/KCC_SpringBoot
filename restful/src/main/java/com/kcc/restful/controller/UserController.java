@@ -3,12 +3,18 @@ package com.kcc.restful.controller;
 import com.kcc.restful.UserDaoService;
 import com.kcc.restful.bean.User;
 import com.kcc.restful.exception.UserNotFoundException;
+import jakarta.validation.Valid;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class UserController {
@@ -22,23 +28,30 @@ public class UserController {
 
     // get Users
     @GetMapping("/users")
-    public List<User> retriveAllUsers(){
+    public List<User> retrieveAllUsers(){
         return userDaoService.findAll();
     }
 
     // get User
     @GetMapping("/users/{id}")
-    public User retriveUser(@PathVariable int id){
+    public EntityModel<User> retrieveUser(@PathVariable int id){
         User user = userDaoService.findById(id);
         if(user == null){
             throw new UserNotFoundException(String.format("User with id %s not found", id));
         }
-        return user;
+
+        EntityModel entityModel = EntityModel.of(user);
+
+        WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).retrieveAllUsers());
+
+        entityModel.add(linkTo.withRel("all-users"));
+
+        return entityModel;
     }
 
     // create user
     @PostMapping("/users")
-    public ResponseEntity<User> addUser(@RequestBody User user){
+    public ResponseEntity<User> addUser(@Valid @RequestBody User user){
         User savedUser = userDaoService.save(user);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser.getId()).toUri();
 
