@@ -14,6 +14,13 @@ spring:
     url: jdbc:oracle:thin:@localhost:1521:XE
     username: kcc
     password: 1234
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
