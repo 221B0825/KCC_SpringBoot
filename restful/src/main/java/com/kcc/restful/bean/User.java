@@ -14,16 +14,16 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 import java.util.List;
 
-@Entity
-@Table(name = "users")
+//@Entity
+//@Table(name = "users")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties(value = {"password", "ssn"})
+//@JsonIgnoreProperties(value = {"password", "ssn"})
 public class User {
 
-    @Id
-    @GeneratedValue
+//    @Id
+//    @GeneratedValue
     private Integer id;
     
     @Schema(title = "사용자 이름", description = "사용자 이름을 입력")
@@ -39,7 +39,7 @@ public class User {
 //    @JsonIgnore
     private String ssn;
 
-    @OneToMany(mappedBy = "user")
+//    @OneToMany(mappedBy = "user")
     private List<Post> posts;
 
     public User(Integer id, String name, Date joinDate, String password, String ssn) {

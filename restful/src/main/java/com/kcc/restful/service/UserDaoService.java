@@ -1,4 +1,4 @@
-package com.kcc.restful;
+package com.kcc.restful.service;
 
 import com.kcc.restful.bean.User;
 import org.springframework.stereotype.Service;
