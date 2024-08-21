@@ -2,6 +2,7 @@ package com.kcc.restaurant.controller;
 
 
 import com.kcc.restaurant.bean.Restaurant;
+import com.kcc.restaurant.bean.Review;
 import com.kcc.restaurant.dto.RestaurantListDTO;
 import com.kcc.restaurant.service.RestaurantService;
 import jakarta.validation.Valid;
@@ -52,5 +53,14 @@ public class RestaurantController {
     public ResponseEntity<Restaurant> updateRestaurant(@PathVariable int id, @RequestBody Restaurant restaurant) {
         Restaurant updateRestaurant = restaurantService.updateRestaurant(id, restaurant);
         return ResponseEntity.ok(updateRestaurant);
+    }
+
+    @GetMapping("/restaurant/{id}/reviews")
+    public ResponseEntity<List<Review>> reviews(@PathVariable int id) {
+        Restaurant restaurant = restaurantService.findRestaurantById(id);
+        List<Review> reviews = restaurant.getReviews();
+
+        // fix
+        return ResponseEntity.ok(reviews);
     }
 }
