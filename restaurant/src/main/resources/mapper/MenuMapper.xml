@@ -16,7 +16,7 @@
             SELECT menu_seq.nextval FROM dual
         </selectKey>
         insert into menu(id, name, price, created_at, updated_at, restaurant_id)
-        values (#{id}, #{name}, #{price}, sysdate, sysdate, #{restaurant_id})
+        values (#{id}, #{name}, #{price}, systimestamp, systimestamp, #{restaurant_id})
     </insert>
 
     <delete id="deleteMenu" parameterType="int">

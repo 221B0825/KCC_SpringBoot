@@ -78,7 +78,7 @@
         </selectKey>
         <!-- 생성된 ID를 사용해 레코드를 삽입 -->
         insert into restaurant(id, name, address, created_at, updated_at)
-        values (#{id}, #{name}, #{address}, sysdate, sysdate)
+        values (#{id}, #{name}, #{address}, systimestamp, systimestamp)
     </insert>
 
     <delete id="deleteRestaurant" parameterType="int">

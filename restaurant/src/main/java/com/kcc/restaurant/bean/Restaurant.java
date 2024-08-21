@@ -9,13 +9,11 @@ import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Bean;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonFilter("restaurantFilter")
 public class Restaurant {
     private Integer id;
     private String name;
