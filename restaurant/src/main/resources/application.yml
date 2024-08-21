@@ -1,0 +1,23 @@
+server:
+  port: 8082
+
+logging:
+  level:
+    org.mybatis: DEBUG
+    org.apache.ibatis: DEBUG
+
+
+spring:
+  messages:
+    basename: messages
+  #connection pool
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@localhost:1521:XE
+    username: kcc
+    password: 1234
+
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.kcc.restaurant.bean

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kcc.restaurant.mapper.RestaurantMapper">
+
+    <resultMap id="restMap" type="com.kcc.restaurant.bean.Restaurant">
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="address" column="address" />
+        <result property="created_at" column="created_at" />
+        <result property="updated_at" column="updated_at" />
+        <collection property="menus" ofType="com.kcc.restaurant.bean.Menu" resultMap="menuMap" />
+        <collection property="reviews" ofType="com.kcc.restaurant.bean.Review" resultMap="reviewMap" />
+    </resultMap>
+
+    <resultMap id="menuMap" type="com.kcc.restaurant.bean.Menu">
+        <result property="id" column="m_id" />
+        <result property="name" column="m_name" />
+        <result property="price" column="price" />
+        <result property="created_at" column="m_created_at" />
+        <result property="updated_at" column="m_updated_at" />
+        <result property="restaurant_id" column="m_restaurant_id" />
+    </resultMap>
+
+    <resultMap id="reviewMap" type="com.kcc.restaurant.bean.Review">
+        <result property="id" column="v_id" />
+        <result property="content" column="content" />
+        <result property="score" column="score" />
+        <result property="created_at" column="v_created_at" />
+        <result property="restaurant_id" column="v_restaurant_id" />
+    </resultMap>
+
+    <select id="findAllRestaurants" resultMap="restMap">
+        SELECT
+            r.id AS id,
+            r.name AS name,
+            r.address AS address,
+            r.created_at AS created_at,
+            r.updated_at AS updated_at,
+            m.id AS m_id,
+            m.name AS m_name,
+            m.price AS price,
+            m.created_at AS m_created_at,
+            m.updated_at AS m_updated_at,
+            m.restaurant_id AS m_restaurant_id,
+            v.id AS v_id,
+            v.content AS content,
+            v.score AS score,
+            v.created_at AS v_created_at,
+            v.restaurant_id AS v_restaurant_id
+        FROM
+            restaurant r
+                LEFT JOIN menu m ON r.id = m.restaurant_id
+                LEFT JOIN review v ON r.id = v.restaurant_id
+    </select>
+
+    <select id="findRestaurantById" resultMap="restMap">
+        select * from restaurant where id = #{id}
+    </select>
+
+</mapper>
