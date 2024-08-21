@@ -18,4 +18,5 @@ public class Menu {
     private Timestamp updated_at;
 
     private Integer restaurant_id;
+
 }

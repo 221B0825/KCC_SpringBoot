@@ -13,7 +13,7 @@
     </resultMap>
 
     <resultMap id="menuMap" type="com.kcc.restaurant.bean.Menu">
-        <result property="id" column="m_id" />
+        <id property="id" column="m_id" />
         <result property="name" column="m_name" />
         <result property="price" column="price" />
         <result property="created_at" column="m_created_at" />
@@ -22,7 +22,7 @@
     </resultMap>
 
     <resultMap id="reviewMap" type="com.kcc.restaurant.bean.Review">
-        <result property="id" column="v_id" />
+        <id property="id" column="v_id" />
         <result property="content" column="content" />
         <result property="score" column="score" />
         <result property="created_at" column="v_created_at" />
@@ -54,7 +54,45 @@
     </select>
 
     <select id="findRestaurantById" resultMap="restMap">
-        select * from restaurant where id = #{id}
+        SELECT
+            r.id AS id,
+            r.name AS name,
+            r.address AS address,
+            r.created_at AS created_at,
+            r.updated_at AS updated_at,
+            m.id AS m_id,
+            m.name AS m_name,
+            m.price AS price,
+            m.created_at AS m_created_at,
+            m.updated_at AS m_updated_at,
+            m.restaurant_id AS m_restaurant_id
+        FROM restaurant r
+                 LEFT JOIN menu m ON r.id = m.restaurant_id
+        WHERE r.id = #{id}
     </select>
 
+    <insert id="createRestaurant" parameterType="Restaurant">
+        <!-- 시퀀스를 사용해 미리 ID 값을 생성 -->
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            SELECT rest_seq.nextval FROM dual
+        </selectKey>
+        <!-- 생성된 ID를 사용해 레코드를 삽입 -->
+        insert into restaurant(id, name, address, created_at, updated_at)
+        values (#{id}, #{name}, #{address}, sysdate, sysdate)
+    </insert>
+
+    <delete id="deleteRestaurant" parameterType="int">
+        DELETE FROM restaurant
+        WHERE id = #{id}
+    </delete>
+
+    <update id="updateRestaurant" parameterType="Restaurant">
+        UPDATE restaurant
+        SET
+            name = #{name},
+            address = #{address},
+            updated_at = sysdate
+        WHERE
+            id = #{id}
+    </update>
 </mapper>
