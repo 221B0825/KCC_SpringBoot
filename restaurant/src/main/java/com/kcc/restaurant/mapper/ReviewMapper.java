@@ -7,5 +7,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface ReviewMapper {
     public Review findReviewById(Integer id);
     public void createReview(Review review);
+    public void deleteReview(Integer id);
 
 }

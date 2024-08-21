@@ -32,4 +32,11 @@ public class ReviewService {
         reviewMapper.createReview(review);
         return findReviewById(review.getId());
     }
+
+    public void deleteReviewById(int id) {
+        if(reviewMapper.findReviewById(id) == null){
+            // throw exception
+        }
+        reviewMapper.deleteReview(id);
+    }
 }
