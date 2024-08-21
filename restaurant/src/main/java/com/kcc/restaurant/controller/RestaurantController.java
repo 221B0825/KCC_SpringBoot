@@ -49,9 +49,8 @@ public class RestaurantController {
     }
 
     @PutMapping("/restaurant/{id}")
-    public ResponseEntity<String> updateRestaurant(@PathVariable int id, @RequestBody Restaurant restaurant) {
-        restaurantService.updateRestaurant(restaurant);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
-        return ResponseEntity.created(location).build();
+    public ResponseEntity<Restaurant> updateRestaurant(@PathVariable int id, @RequestBody Restaurant restaurant) {
+        Restaurant updateRestaurant = restaurantService.updateRestaurant(id, restaurant);
+        return ResponseEntity.ok(updateRestaurant);
     }
 }

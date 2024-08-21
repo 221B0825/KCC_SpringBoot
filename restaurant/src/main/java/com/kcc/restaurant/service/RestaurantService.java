@@ -3,6 +3,7 @@ package com.kcc.restaurant.service;
 import com.kcc.restaurant.bean.Menu;
 import com.kcc.restaurant.bean.Restaurant;
 import com.kcc.restaurant.dto.RestaurantListDTO;
+import com.kcc.restaurant.exception.RestaurantNotFoundException;
 import com.kcc.restaurant.mapper.MenuMapper;
 import com.kcc.restaurant.mapper.RestaurantMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class RestaurantService {
     }
 
     public Restaurant findRestaurantById(int id){
+        if(restaurantMapper.findRestaurantById(id) == null){
+            throw new RestaurantNotFoundException(String.format("Restaurant with id %s not found", id));
+        }
         return restaurantMapper.findRestaurantById(id);
     }
 
@@ -49,12 +53,21 @@ public class RestaurantService {
     }
 
     public void deleteRestaurant(int id){
+        if(restaurantMapper.findRestaurantById(id) == null){
+            throw new RestaurantNotFoundException(String.format("Restaurant with id %s not found", id));
+        }
         restaurantMapper.deleteRestaurant(id);
     }
 
-    public Restaurant updateRestaurant(Restaurant restaurant){
+    public Restaurant updateRestaurant(int id, Restaurant restaurant){
+        if(restaurantMapper.findRestaurantById(id) == null){
+            throw new RestaurantNotFoundException(String.format("Restaurant with id %s not found", id));
+        }
+
+        restaurant.setId(id);
         restaurantMapper.updateRestaurant(restaurant);
-        return restaurant;
+
+        return findRestaurantById(id);
     }
 
 }
