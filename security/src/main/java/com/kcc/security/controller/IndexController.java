@@ -1,13 +1,25 @@
 package com.kcc.security.controller;
 
-
-import ch.qos.logback.core.model.Model;
+import com.kcc.security.model.User;
+import com.kcc.security.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class IndexController {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @GetMapping({"", "/"})
     public String index() {
@@ -24,11 +36,13 @@ public class IndexController {
         return "user";
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("/admin")
     public @ResponseBody String admin() {
         return "admin";
     }
 
+    @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/manager")
     public @ResponseBody String manager() {
         return "manager";
@@ -40,9 +54,30 @@ public class IndexController {
         return "loginForm";
     }
 
-    @GetMapping("/join")
-    public @ResponseBody String join() {
+    @GetMapping("/joinForm")
+    public String joinForm() {
+        return "joinForm";
+    }
+
+    @PostMapping("/join")
+    public @ResponseBody String join(User user){
+        System.out.println(user);
+        user.setRole("ROLE_USER");
+
+        String rawPassword = user.getPassword();
+        String encPassword = passwordEncoder.encode(rawPassword);
+        user.setPassword(encPassword);
+
+        userRepository.save(user);
         return "join";
     }
+
+    @GetMapping("/main")
+    public String main() {
+        return "main";
+    }
+
+
+
 
 }
