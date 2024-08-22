@@ -65,9 +65,15 @@
             m.price AS price,
             m.created_at AS m_created_at,
             m.updated_at AS m_updated_at,
-            m.restaurant_id AS m_restaurant_id
+            m.restaurant_id AS m_restaurant_id,
+            v.id AS v_id,
+            v.content AS content,
+            v.score AS score,
+            v.created_at AS v_created_at,
+            v.restaurant_id AS v_restaurant_id
         FROM restaurant r
                  LEFT JOIN menu m ON r.id = m.restaurant_id
+                 LEFT JOIN review v ON r.id = v.restaurant_id
         WHERE r.id = #{id}
     </select>
 
@@ -95,4 +101,32 @@
         WHERE
             id = #{id}
     </update>
+
+    <select id="getAvgScore" resultType="double">
+        SELECT AVG(score)
+        FROM review
+        WHERE restaurant_id = #{restaurant_id}
+    </select>
+
+    <select id="reviewByRestaurantId" resultMap="reviewMap">
+    <![CDATA[
+        SELECT re.id AS v_id,
+               re.content AS content,
+               re.score AS score,
+               re.created_at AS v_created_at
+        FROM (
+                 SELECT inner_query.*, ROWNUM rnum
+                 FROM (
+                          SELECT id, content, score, created_at
+                          FROM review
+                          WHERE restaurant_id = #{restaurant_id}
+                          ORDER BY created_at DESC
+                      ) inner_query
+                 WHERE ROWNUM <= #{limit} + #{offset}
+             ) re
+        WHERE rnum >= #{offset}
+        ]]>
+</select>
+
+
 </mapper>

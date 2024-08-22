@@ -4,6 +4,7 @@ package com.kcc.restaurant.controller;
 import com.kcc.restaurant.bean.Restaurant;
 import com.kcc.restaurant.bean.Review;
 import com.kcc.restaurant.dto.RestaurantListDTO;
+import com.kcc.restaurant.dto.ReviewResponseDTO;
 import com.kcc.restaurant.service.RestaurantService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,12 +56,17 @@ public class RestaurantController {
         return ResponseEntity.ok(updateRestaurant);
     }
 
-    @GetMapping("/restaurant/{id}/reviews")
-    public ResponseEntity<List<Review>> reviews(@PathVariable int id) {
-        Restaurant restaurant = restaurantService.findRestaurantById(id);
-        List<Review> reviews = restaurant.getReviews();
 
-        // fix
-        return ResponseEntity.ok(reviews);
+
+    @GetMapping("/restaurant/{id}/reviews")
+    public ResponseEntity<ReviewResponseDTO> reviews(
+            @PathVariable int id,
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "3") int limit) {
+
+        ReviewResponseDTO reviewResponse = restaurantService.findReviewsByRestaurantId(id, offset, limit);
+
+        return ResponseEntity.ok(reviewResponse);
     }
+
 }

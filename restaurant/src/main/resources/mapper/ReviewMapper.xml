@@ -9,6 +9,8 @@
         <result property="created_at" column="created_at" />
         <result property="restaurant_id" column="restaurant_id" />
     </resultMap>
+    
+
 
     <insert id="createReview" parameterType="Review">
         <selectKey keyProperty="id" resultType="int" order="BEFORE">

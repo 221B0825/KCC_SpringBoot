@@ -2,10 +2,13 @@ package com.kcc.restaurant.service;
 
 import com.kcc.restaurant.bean.Menu;
 import com.kcc.restaurant.bean.Restaurant;
+import com.kcc.restaurant.bean.Review;
 import com.kcc.restaurant.dto.RestaurantListDTO;
+import com.kcc.restaurant.dto.ReviewResponseDTO;
 import com.kcc.restaurant.exception.RestaurantNotFoundException;
 import com.kcc.restaurant.mapper.MenuMapper;
 import com.kcc.restaurant.mapper.RestaurantMapper;
+import com.kcc.restaurant.mapper.ReviewMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +23,9 @@ public class RestaurantService {
 
     @Autowired
     private MenuMapper menuMapper;
+
+    @Autowired
+    private ReviewMapper reviewMapper;
 
     public List<RestaurantListDTO> findAllRestaurants() {
         List<Restaurant> restaurants = restaurantMapper.findAllRestaurants();
@@ -68,6 +74,34 @@ public class RestaurantService {
         restaurantMapper.updateRestaurant(restaurant);
 
         return findRestaurantById(id);
+    }
+
+    public ReviewResponseDTO findReviewsByRestaurantId(int restaurantId, int offset, int limit) {
+        double avgScore = restaurantMapper.getAvgScore(restaurantId);
+        List<ReviewResponseDTO.ReviewDTO> reviews = restaurantMapper.reviewByRestaurantId(restaurantId, offset, limit)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        ReviewResponseDTO.PageDTO page = new ReviewResponseDTO.PageDTO();
+        page.setOffset(offset);
+        page.setLimit(limit);
+
+        ReviewResponseDTO response = new ReviewResponseDTO();
+        response.setAvgScore(avgScore);
+        response.setReviews(reviews);
+        response.setPage(page);
+
+        return response;
+    }
+
+    private ReviewResponseDTO.ReviewDTO convertToDTO(Review review) {
+        ReviewResponseDTO.ReviewDTO dto = new ReviewResponseDTO.ReviewDTO();
+        dto.setId(review.getId());
+        dto.setContent(review.getContent());
+        dto.setScore(review.getScore());
+        dto.setCreatedAt(review.getCreated_at());
+        return dto;
     }
 
 }
