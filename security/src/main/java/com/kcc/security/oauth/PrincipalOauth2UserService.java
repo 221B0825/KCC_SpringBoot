@@ -1,5 +1,6 @@
 package com.kcc.security.oauth;
 
+import com.kcc.security.auth.PrincipalDetail;
 import com.kcc.security.model.User;
 import com.kcc.security.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +18,12 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        /*
+
         System.out.println("userRequest = " + userRequest);
         System.out.println("getClientRegistation" + userRequest.getClientRegistration());
         System.out.println("getAccessToken" + userRequest.getAccessToken());
         System.out.println("getAttributes: "+super.loadUser(userRequest).getAttributes());
-        */
+
         OAuth2User oAuth2User = super.loadUser(userRequest);
         System.out.println("getAttributes: "+oAuth2User.getAttributes());
         // click "google login" -> show google login page -> login success -> request Access Token
@@ -39,10 +40,17 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         // not found user -> sign in process
         if(userEntity == null) {
             // sign in
-            userEntity = User.builder().username(username).password("1234").email(email).role(role).provider(provider).providerId(providerId).build();
+            userEntity = User.builder()
+                    .username(username)
+                    .password("1234")
+                    .email(email)
+                    .role(role)
+                    .provider(provider)
+                    .providerId(providerId)
+                    .build();
             userRepository.save(userEntity);
         }
 
-        return super.loadUser(userRequest);
+        return new PrincipalDetail(userEntity, oAuth2User.getAttributes());
     }
 }
