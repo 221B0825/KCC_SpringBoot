@@ -16,6 +16,7 @@
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
         <button>Login</button>
     </form>
+    <a href="/oauth2/authorization/google">Google Login</a>
     <a href="/joinForm">Sign In</a>
 </body>
 </html>
