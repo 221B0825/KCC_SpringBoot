@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 public class MyFilter1 implements Filter {
 
@@ -13,9 +14,19 @@ public class MyFilter1 implements Filter {
         System.out.println("filter1..................................");
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         HttpServletResponse res = (HttpServletResponse) servletResponse;
+        if(req.getMethod().equals("POST")){
+            String headerAuth = req.getHeader("Authorization");
+            System.out.println(headerAuth);
 
-        String header = req.getHeader("Authorization");
-        System.out.println(header);
-        filterChain.doFilter(req, res);
+            if(headerAuth.equals("kosa")){
+                filterChain.doFilter(req, res);
+            }else{
+                PrintWriter out = res.getWriter();
+                out.println("Unauthorized :: login fail");
+            }
+        }
+
+
+        //filterChain.doFilter(req, res);
     }
 }
