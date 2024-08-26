@@ -29,4 +29,20 @@ public class RestApiController {
         userRepository.save(user);
         return "<h1>JOIN SUCCESS</h1>";
     }
+
+    @GetMapping("/user")
+    public String user() {
+        return "<h1>USER</h1>";
+    }
+
+    @GetMapping("/manager/mm")
+    public String manager() {
+        return "<h1>manager</h1>";
+    }
+
+
+    @GetMapping("/admin/admin")
+    public String admin() {
+        return "<h1>admin</h1>";
+    }
 }

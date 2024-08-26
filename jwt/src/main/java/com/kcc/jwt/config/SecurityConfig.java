@@ -3,6 +3,8 @@ package com.kcc.jwt.config;
 
 import com.kcc.jwt.filter.JwtAuthenticationFilter;
 import com.kcc.jwt.filter.JwtAuthorizationFilter;
+import com.kcc.jwt.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +21,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final UserRepository userRepository;
 
     private static final String[]   WHITELIST = {
             "/join",
@@ -44,9 +49,11 @@ public class SecurityConfig {
                 .formLogin(formLogin -> formLogin.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .addFilter(new JwtAuthenticationFilter(authenticationManager))
-                .addFilter(new JwtAuthorizationFilter(authenticationManager))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository))
                 .authorizeHttpRequests(authorizeRequests ->
                                 authorizeRequests.requestMatchers(WHITELIST).permitAll()
+                                        .requestMatchers("/manager/**").hasAnyRole("MANAGER", "ADMIN")
+                                        .requestMatchers("/admin/**").hasAnyRole("ADMIN")
                                         .requestMatchers(PathRequest.toH2Console()).permitAll()
                                         .anyRequest().authenticated()
                         // not use session

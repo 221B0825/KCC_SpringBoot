@@ -2,19 +2,28 @@ package com.kcc.jwt.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.kcc.jwt.config.PrincipalDetail;
+import com.kcc.jwt.model.User;
+import com.kcc.jwt.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import java.io.IOException;
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {
+    private UserRepository userRepository;
+
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
         super(authenticationManager);
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -35,5 +44,17 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String username = JWT.require(Algorithm.HMAC512("kcc"))
                 .build().verify(jwtToken).getClaim("username").asString();
         System.out.println("username: " + username);
+
+        if(username != null){
+            // get user
+            User userEntity = userRepository.findByUsername(username);
+            // convert principalDetail
+            PrincipalDetail principalDetail = new PrincipalDetail(userEntity);
+
+            Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetail, null, principalDetail.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            chain.doFilter(request, response);
+        }
     }
 }
