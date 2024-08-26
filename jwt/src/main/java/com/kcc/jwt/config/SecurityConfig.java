@@ -2,6 +2,7 @@ package com.kcc.jwt.config;
 
 
 import com.kcc.jwt.filter.JwtAuthenticationFilter;
+import com.kcc.jwt.filter.JwtAuthorizationFilter;
 import com.kcc.jwt.filter.MyFilter1;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -46,6 +47,7 @@ public class SecurityConfig {
                 .formLogin(formLogin -> formLogin.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .addFilter(new JwtAuthenticationFilter(authenticationManager))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager))
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests.requestMatchers(WHITELIST).permitAll()
                                 .requestMatchers(PathRequest.toH2Console()).permitAll()
