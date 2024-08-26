@@ -1,8 +1,12 @@
 package com.kcc.jwt.filter;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kcc.jwt.config.PrincipalDetail;
 import com.kcc.jwt.model.User;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.Date;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -47,5 +52,21 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             e.printStackTrace();
         }
         return null;
+    }
+
+    // If authentication is successful, run automatically this method
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        System.out.println("successfulAuthentication :: login success");
+
+        // create JWT Token & send
+        PrincipalDetail principalDetail = (PrincipalDetail) authResult.getPrincipal();
+        // (60000 * 10) = 10 minutes
+        String jwtToken = JWT.create().withSubject("jwtToken").withExpiresAt(new Date(System.currentTimeMillis() + (60000*10)))
+                .withClaim("id", principalDetail.getUser().getId())
+                .withClaim("username", principalDetail.getUsername())
+                .sign(Algorithm.HMAC512("kcc"));
+
+        response.addHeader("Authorization", "Bearer " + jwtToken);
     }
 }
